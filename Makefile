@@ -30,3 +30,21 @@ push-gms:
 	docker push $(DOCKERHUB_USER)/datahub-gms:$(DATAHUB_VERSION)-$(TAG)
 
 	@echo "✅ Done: Pushed image to Docker Hub"
+
+build-upgrade:
+	@echo "==> Building GMS in $(DATAHUB_PATH) ..."
+	cd $(DATAHUB_PATH) && ./gradlew :metadata-service:war:build
+
+	@echo "==> Building Docker image..."
+	docker build -t datahub-upgrade:$(DATAHUB_VERSION)-$(TAG) -f docker/datahub-upgrade/Dockerfile .
+
+	@echo "==> Docker image built: datahub-gms:$(DATAHUB_VERSION)-$(TAG)"
+
+push-upgrade:
+	@echo "==> Tagging image for Docker Hub..."
+	docker tag datahub-upgrade:$(DATAHUB_VERSION)-$(TAG) $(DOCKERHUB_USER)/datahub-upgrade:$(DATAHUB_VERSION)-$(TAG)
+
+	@echo "==> Pushing image to Docker Hub: $(DOCKERHUB_USER)/datahub-gms:$(DATAHUB_VERSION)-$(TAG)"
+	docker push $(DOCKERHUB_USER)/datahub-upgrade:$(DATAHUB_VERSION)-$(TAG)
+
+	@echo "✅ Done: Pushed image to Docker Hub"
